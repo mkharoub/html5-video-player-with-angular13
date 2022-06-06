@@ -1,0 +1,36 @@
+<div #videoContainer class="video-container" [ngClass]="{'fullscreen-active': isFullScreenActive}">
+  <video #video controls preload="metadata" poster="assets/img/poster.jpg" class="video-container__player">
+    <source src="assets/video/tears-of-steel-battle-clip-medium.mp4" type="video/mp4">
+    <source src="assets/video/tears-of-steel-battle-clip-medium.webm" type="video/webm">
+    <source src="assets/video/tears-of-steel-battle-clip-medium.ogg" type="video/ogg">
+    <!-- Flash fallback -->
+    <object type="application/x-shockwave-flash"
+            data="assets/video/flash-player.swf?videoUrl=assets/video/tears-of-steel-battle-clip-medium.mp4" width="1024" height="576">
+      <param name="movie" value="flash-player.swf?videoUrl=video/tears-of-steel-battle-clip-medium.mp4"/>
+      <param name="allowfullscreen" value="true"/>
+      <param name="wmode" value="transparent"/>
+      <param name="flashvars"
+             value="controlbar=over&amp;image=img/poster.jpg&amp;file=flash-player.swf?videoUrl=video/tears-of-steel-battle-clip-medium.mp4"/>
+      <img alt="Tears of Steel poster image" src="assets/img/poster.jpg" width="1024" height="428"
+           title="No video playback possible, please download the video from the link below"/>
+    </object>
+    <!-- Offer download -->
+    <a href="assets/video/tears-of-steel-battle-clip-medium.mp4">Download MP4</a>
+  </video>
+  <div class="video-container__controls" [ngClass]="{'show' : supportsHtml5Video}">
+    <div class="controls__backdrop"></div>
+    <div class="controls__actions">
+      <button id="playpause" type="button" (click)="onPlayPauseClick()">Play/Pause</button>
+      <button id="stop" type="button" (click)="onStopClick()">Stop</button>
+      <div class="progress">
+        <progress id="progress" value="0" [max]="progressMax" #progress (click)="onProgressClick($event)">
+          <span id="progress-bar" [ngStyle]="{'width': progressBarWidth}"></span>
+        </progress>
+      </div>
+      <button id="mute" type="button" (click)="onMuteClick()">Mute/Unmute</button>
+      <button id="volinc" type="button" (click)="onAlertVolume('+')">Vol+</button>
+      <button id="voldec" type="button" (click)="onAlertVolume('-')">Vol-</button>
+      <button id="fs" type="button" *ngIf="fullScreenEnabled" (click)="onFullScreenClick()">Fullscreen</button>
+    </div>
+  </div>
+</div>
