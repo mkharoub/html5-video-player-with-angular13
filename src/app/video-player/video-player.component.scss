@@ -4,7 +4,6 @@
 }
 
 .video-container {
-  max-width: 1024px;
   width: 100%;
   height: auto;
   margin: 0 auto;
@@ -98,6 +97,10 @@
       .svg-fill {
         fill: #fff;
       }
+    }
+
+    &.full-height {
+      height: 100%;
     }
   }
 

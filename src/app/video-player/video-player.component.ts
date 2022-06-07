@@ -1,11 +1,20 @@
-import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 
 @Component({
   selector: 'app-video-player',
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss']
 })
-export class VideoPlayerComponent implements OnInit, AfterViewInit {
+export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('videoContainer') videoContainer: ElementRef<HTMLElement>;
   @ViewChild('video') video: ElementRef<HTMLVideoElement>;
   @ViewChild('controlsActions') controlsActions: ElementRef;
@@ -19,8 +28,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   public progressBarWidth = '0%';
   public isFullScreenActive = false;
   public isVideoPlaying = false;
+  public isVideoPlayerTooSmall = false;
+  private resizeObserver: ResizeObserver;
 
-  constructor() {
+  constructor(private host: ElementRef, private zone: NgZone) {
   }
 
   ngOnInit(): void {
@@ -35,6 +46,18 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       (document as any).webkitFullscreenEnabled ||
       (video as any).webkitRequestFullScreen
     );
+
+    this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+      this.zone.run(() => {
+        if (this.video.nativeElement.offsetHeight <= 315) {
+          this.isVideoPlayerTooSmall = true;
+
+          return;
+        }
+
+        this.isVideoPlayerTooSmall = false;
+      })
+    });
   }
 
   ngAfterViewInit() {
@@ -48,7 +71,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       video.ontimeupdate = () => {
         this.progressBarWidth = Math.floor((video.currentTime / video.duration) * 100) + '%';
       }
+
+      this.resizeObserver.observe(this.host.nativeElement);
     }
+  }
+
+  ngOnDestroy() {
+    this.resizeObserver.unobserve(this.host.nativeElement);
   }
 
   @HostListener('click', ['$event'])
@@ -57,7 +86,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     const isItControlsProgress = this.controlsProgress.nativeElement.contains(event.target);
     const isItPlayPauseButton = this.playPauseButton.nativeElement.contains(event.target);
     const isItFullscreenButton = this.fullscreenButton.nativeElement.contains(event.target);
-    console.log(event.currentTarget)
+
     if (!isItControlsActions && !isItControlsProgress && !isItPlayPauseButton && !isItFullscreenButton) {
       this.onPlayPauseClick();
     }
