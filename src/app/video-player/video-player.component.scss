@@ -9,6 +9,7 @@
   margin: 0 auto;
   display: flex;
   position: relative;
+  cursor: pointer;
 
   .video-container__player {
     width: 100%;
@@ -126,16 +127,18 @@
     }
   }
 
-  &:hover,
-  &:focus {
-    .video-container__controls {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+  &.touched {
+    &:hover,
+    &:focus {
+      .video-container__controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
 
-      .controls__backdrop,
-      .controls__actions {
-        opacity: 1;
+        .controls__backdrop,
+        .controls__actions {
+          opacity: 1;
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-<div #videoContainer class="video-container" [ngClass]="{'fullscreen-active': isFullScreenActive}">
+<div #videoContainer class="video-container" [ngClass]="{'fullscreen-active': isFullScreenActive, 'touched': isVideoTouched}">
   <video #video controls preload="metadata" poster="assets/img/poster.jpg" class="video-container__player">
     <source src="assets/video/tears-of-steel-battle-clip-medium.mp4" type="video/mp4">
     <source src="assets/video/tears-of-steel-battle-clip-medium.webm" type="video/webm">

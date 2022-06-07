@@ -29,7 +29,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   public isFullScreenActive = false;
   public isVideoPlaying = false;
   public isVideoPlayerTooSmall = false;
+  public isVideoTouched = false;
+
   private resizeObserver: ResizeObserver;
+  private videoPlayerTimeId: any;
 
   constructor(private host: ElementRef, private zone: NgZone) {
   }
@@ -78,6 +81,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.resizeObserver.unobserve(this.host.nativeElement);
+
+    clearInterval(this.videoPlayerTimeId);
   }
 
   @HostListener('click', ['$event'])
@@ -90,6 +95,35 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!isItControlsActions && !isItControlsProgress && !isItPlayPauseButton && !isItFullscreenButton) {
       this.onPlayPauseClick();
     }
+  }
+
+  @HostListener('mouseenter', ['$event'])
+  onVideoPlayerMouseEnter(event: Event) {
+    if (this.isVideoTouched) {
+      return;
+    }
+
+    const video = this.video.nativeElement;
+
+    video.muted = true;
+    video.play().then(() => {
+      this.videoPlayerTimeId = setInterval(() => {
+        video.currentTime += 15;
+
+        if (video.currentTime >= video.duration) {
+          video.currentTime = 0;
+        }
+      }, 1000);
+    });
+  }
+
+  @HostListener('mouseout', ['$event'])
+  onVideoPlayerMouseOut(event: Event) {
+    if (this.isVideoTouched) {
+      return;
+    }
+
+    this.prepareVideoPlayerBeforePlay();
   }
 
   @HostListener('document:fullscreenchange')
@@ -129,6 +163,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private playVideo() {
     this.video.nativeElement.play();
     this.isVideoPlaying = true;
+    this.isVideoTouched = true;
   }
 
   private pauseVideo() {
@@ -136,7 +171,21 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isVideoPlaying = false;
   }
 
+  private prepareVideoPlayerBeforePlay() {
+    const video = this.video.nativeElement;
+
+    video.muted = false;
+    video.pause();
+    video.currentTime = 0;
+
+    clearInterval(this.videoPlayerTimeId);
+  }
+
   onPlayPauseClick() {
+    if (!this.isVideoTouched) {
+      this.prepareVideoPlayerBeforePlay();
+    }
+
     const video = this.video.nativeElement;
 
     if (video.paused || video.ended) {
