@@ -20,7 +20,16 @@
   <div class="video-container__controls" *ngIf="supportsHtml5Video">
     <div class="controls__backdrop"></div>
     <div class="controls__actions" #controlsActions>
-      <button id="playpause" type="button" (click)="onPlayPauseClick()">Play/Pause</button>
+      <button id="playpause" type="button" (click)="onPlayPauseClick()">
+        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="isVideoPlaying">
+          <use class="svg-shadow" xlink:href="#harri-pause-icon"></use>
+          <path class="svg-fill" d="M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z" id="harri-pause-icon"></path>
+        </svg>
+        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="!isVideoPlaying">
+          <use class="svg-shadow" xlink:href="#harri-play-icon"></use>
+          <path class="svg-fill" d="M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z" id="harri-play-icon"></path>
+        </svg>
+      </button>
       <button id="stop" type="button" (click)="onStopClick()">Stop</button>
       <div class="progress">
         <progress id="progress" value="0" [max]="progressMax" #progress (click)="onProgressClick($event)">

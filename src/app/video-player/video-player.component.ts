@@ -16,6 +16,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   public progressMax = 0;
   public progressBarWidth = '0%';
   public isFullScreenActive = false;
+  public isVideoPlaying = false;
 
   constructor() {
   }
@@ -52,15 +53,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   @HostListener('click', ['$event'])
   onVideoPlayerClick(event: Event) {
     if (!this.controlsActions.nativeElement.contains(event.target)) {
-      const video = this.video.nativeElement;
-
-      if (video.paused) {
-        video.play();
-
-        return;
-      }
-
-      video.pause();
+      this.onPlayPauseClick();
     }
   }
 
@@ -98,16 +91,26 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     );
   }
 
+  private playVideo() {
+    this.video.nativeElement.play();
+    this.isVideoPlaying = true;
+  }
+
+  private pauseVideo() {
+    this.video.nativeElement.pause();
+    this.isVideoPlaying = false;
+  }
+
   onPlayPauseClick() {
     const video = this.video.nativeElement;
 
     if (video.paused || video.ended) {
-      video.play();
+      this.playVideo();
 
       return;
     }
 
-    video.pause();
+    this.pauseVideo();
   }
 
   onStopClick() {
