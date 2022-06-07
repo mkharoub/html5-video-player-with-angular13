@@ -9,7 +9,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   @ViewChild('videoContainer') videoContainer: ElementRef<HTMLElement>;
   @ViewChild('video') video: ElementRef<HTMLVideoElement>;
   @ViewChild('controlsActions') controlsActions: ElementRef;
-  @ViewChild('progress') progress: ElementRef<HTMLProgressElement>;
+  @ViewChild('controlsProgress') controlsProgress: ElementRef;
+  @ViewChild('playPauseButton') playPauseButton: ElementRef;
+  @ViewChild('fullscreenButton') fullscreenButton: ElementRef;
 
   public supportsHtml5Video: boolean;
   public fullScreenEnabled: boolean;
@@ -44,7 +46,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         this.progressMax = video.duration;
       }
       video.ontimeupdate = () => {
-        this.progress.nativeElement.value = video.currentTime;
         this.progressBarWidth = Math.floor((video.currentTime / video.duration) * 100) + '%';
       }
     }
@@ -52,7 +53,12 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   @HostListener('click', ['$event'])
   onVideoPlayerClick(event: Event) {
-    if (!this.controlsActions.nativeElement.contains(event.target)) {
+    const isItControlsActions = this.controlsActions.nativeElement.contains(event.target);
+    const isItControlsProgress = this.controlsProgress.nativeElement.contains(event.target);
+    const isItPlayPauseButton = this.playPauseButton.nativeElement.contains(event.target);
+    const isItFullscreenButton = this.fullscreenButton.nativeElement.contains(event.target);
+    console.log(event.currentTarget)
+    if (!isItControlsActions && !isItControlsProgress && !isItPlayPauseButton && !isItFullscreenButton) {
       this.onPlayPauseClick();
     }
   }
@@ -119,7 +125,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     video.pause();
     video.currentTime = 0;
 
-    this.progress.nativeElement.value = 0;
   }
 
   onMuteClick() {
@@ -193,8 +198,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   onProgressClick(e: MouseEvent) {
     const video = this.video.nativeElement;
-    const progress = this.progress.nativeElement;
-    const pos = (e.pageX  - this.videoContainer.nativeElement.offsetLeft - progress.offsetLeft) / progress.offsetWidth;
+    const controlsProgress = this.controlsProgress.nativeElement;
+    const pos = (e.pageX - this.videoContainer.nativeElement.offsetLeft - controlsProgress.offsetLeft) / controlsProgress.offsetWidth;
 
     video.currentTime = pos * video.duration;
   }

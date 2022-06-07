@@ -20,66 +20,73 @@
   </video>
   <div class="video-container__controls" *ngIf="supportsHtml5Video">
     <div class="controls__backdrop"></div>
-    <div class="controls__actions" #controlsActions>
-      <button id="playpause" type="button" (click)="onPlayPauseClick()">
-        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="isVideoPlaying">
-          <use class="svg-shadow" xlink:href="#harri-pause-icon"></use>
-          <path class="svg-fill" d="M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z"
-                id="harri-pause-icon"></path>
-        </svg>
-        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="!isVideoPlaying">
-          <use class="svg-shadow" xlink:href="#harri-play-icon"></use>
-          <path class="svg-fill" d="M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z"
-                id="harri-play-icon"></path>
-        </svg>
-      </button>
-      <button id="stop" type="button" (click)="onStopClick()">Stop</button>
-      <div class="progress">
-        <progress id="progress" value="0" [max]="progressMax" #progress (click)="onProgressClick($event)">
-          <span id="progress-bar" [ngStyle]="{'width': progressBarWidth}"></span>
-        </progress>
+    <div class="controls__progress">
+      <div class="progress__placeholder" #controlsProgress (click)="onProgressClick($event)">
+        <div [ngStyle]="{'width': progressBarWidth}"></div>
       </div>
-      <button id="mute" type="button" (click)="onMuteClick()">Mute/Unmute</button>
-      <button id="volinc" type="button" (click)="onAlertVolume('+')">Vol+</button>
-      <button id="voldec" type="button" (click)="onAlertVolume('-')">Vol-</button>
-      <button id="fs" type="button" *ngIf="fullScreenEnabled" (click)="onFullScreenClick()">
-        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="!isFullScreenActive">
-          <g class="fullscreen-button-corner-0">
-            <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="harri-open-fullscreen-top-left-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-1">
-            <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="harri-open-fullscreen-bottom-left-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-2">
-            <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="harri-open-fullscreen-top-right-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-3">
-            <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="harri-open-fullscreen-bottom-right-rect"></path>
-          </g>
-        </svg>
-        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" *ngIf="isFullScreenActive">
-          <g class="fullscreen-button-corner-2">
-            <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 14,14 -4,0 0,2 6,0 0,-6 -2,0 0,4 0,0 z" id="harri-close-fullscreen-top-left-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-3">
-            <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 22,14 0,-4 -2,0 0,6 6,0 0,-2 -4,0 0,0 z" id="harri-close-fullscreen-bottom-left-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-0">
-            <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 20,26 2,0 0,-4 4,0 0,-2 -6,0 0,6 0,0 z" id="harri-close-fullscreen-top-right-rect"></path>
-          </g>
-          <g class="fullscreen-button-corner-1">
-            <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
-            <path class="svg-fill" d="m 10,22 4,0 0,4 2,0 0,-6 -6,0 0,2 0,0 z" id="harri-close-fullscreen-bottom-right-rect"></path>
-          </g>
-        </svg>
-      </button>
+    </div>
+    <div class="controls__actions" #controlsActions>
+      <div class="actions__left-side">
+        <button type="button" (click)="onPlayPauseClick()" #playPauseButton>
+          <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" [ngClass]="{'show' : isVideoPlaying}">
+            <use class="svg-shadow" xlink:href="#harri-pause-icon"></use>
+            <path class="svg-fill" d="M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z"
+                  id="harri-pause-icon"></path>
+          </svg>
+          <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" [ngClass]="{'show' : !isVideoPlaying}">
+            <use class="svg-shadow" xlink:href="#harri-play-icon"></use>
+            <path class="svg-fill" d="M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z"
+                  id="harri-play-icon"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="actions__right-side">
+        <button type="button" *ngIf="fullScreenEnabled" (click)="onFullScreenClick()" #fullscreenButton>
+          <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" [ngClass]="{'show' : !isFullScreenActive}">
+            <g class="fullscreen-button-corner-0">
+              <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="harri-open-fullscreen-top-left-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-1">
+              <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="harri-open-fullscreen-bottom-left-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-2">
+              <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="harri-open-fullscreen-top-right-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-3">
+              <use class="svg-shadow" xlink:href="#harri-open-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="harri-open-fullscreen-bottom-right-rect"></path>
+            </g>
+          </svg>
+          <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" [ngClass]="{'show' : isFullScreenActive}">
+            <g class="fullscreen-button-corner-2">
+              <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 14,14 -4,0 0,2 6,0 0,-6 -2,0 0,4 0,0 z" id="harri-close-fullscreen-top-left-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-3">
+              <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 22,14 0,-4 -2,0 0,6 6,0 0,-2 -4,0 0,0 z" id="harri-close-fullscreen-bottom-left-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-0">
+              <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 20,26 2,0 0,-4 4,0 0,-2 -6,0 0,6 0,0 z" id="harri-close-fullscreen-top-right-rect"></path>
+            </g>
+            <g class="fullscreen-button-corner-1">
+              <use class="svg-shadow" xlink:href="#harri-close-fullscreen-top-left-rect"></use>
+              <path class="svg-fill" d="m 10,22 4,0 0,4 2,0 0,-6 -6,0 0,2 0,0 z" id="harri-close-fullscreen-bottom-right-rect"></path>
+            </g>
+          </svg>
+        </button>
+      </div>
+
+<!--      <button type="button" (click)="onStopClick()">Stop</button>-->
+<!--      <button type="button" (click)="onMuteClick()">Mute/Unmute</button>-->
+<!--      <button type="button" (click)="onAlertVolume('+')">Vol+</button>-->
+<!--      <button type="button" (click)="onAlertVolume('-')">Vol-</button>-->
+
+
     </div>
   </div>
 </div>
