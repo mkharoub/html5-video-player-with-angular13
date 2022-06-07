@@ -8,6 +8,7 @@ import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} f
 export class VideoPlayerComponent implements OnInit, AfterViewInit {
   @ViewChild('videoContainer') videoContainer: ElementRef<HTMLElement>;
   @ViewChild('video') video: ElementRef<HTMLVideoElement>;
+  @ViewChild('controlsActions') controlsActions: ElementRef;
   @ViewChild('progress') progress: ElementRef<HTMLProgressElement>;
 
   public supportsHtml5Video: boolean;
@@ -45,6 +46,21 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         this.progress.nativeElement.value = video.currentTime;
         this.progressBarWidth = Math.floor((video.currentTime / video.duration) * 100) + '%';
       }
+    }
+  }
+
+  @HostListener('click', ['$event'])
+  onVideoPlayerClick(event: Event) {
+    if (!this.controlsActions.nativeElement.contains(event.target)) {
+      const video = this.video.nativeElement;
+
+      if (video.paused) {
+        video.play();
+
+        return;
+      }
+
+      video.pause();
     }
   }
 

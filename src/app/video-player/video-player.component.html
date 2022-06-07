@@ -17,9 +17,9 @@
     <!-- Offer download -->
     <a href="assets/video/tears-of-steel-battle-clip-medium.mp4">Download MP4</a>
   </video>
-  <div class="video-container__controls" [ngClass]="{'show' : supportsHtml5Video}">
+  <div class="video-container__controls" *ngIf="supportsHtml5Video">
     <div class="controls__backdrop"></div>
-    <div class="controls__actions">
+    <div class="controls__actions" #controlsActions>
       <button id="playpause" type="button" (click)="onPlayPauseClick()">Play/Pause</button>
       <button id="stop" type="button" (click)="onStopClick()">Stop</button>
       <div class="progress">
