@@ -1,3 +1,22 @@
+$primary-color: #0288dd;
+
+@mixin showVideoContainerControls {
+  .video-container__controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .controls__backdrop,
+    .controls__actions {
+      opacity: 1;
+    }
+  }
+}
+
+@mixin transition($property, $duration, $func: cubic-bezier(0.4, 0, 1, 1)) {
+  transition: $property $duration $func;
+}
+
 :host {
   display: inline-block;
   width: 100%;
@@ -35,7 +54,7 @@
       background-position: bottom;
       background-repeat: repeat-x;
       opacity: 0;
-      transition: opacity .1s cubic-bezier(0.4, 0, 1, 1);
+      @include transition(opacity, 0.10s);
     }
 
     .controls__progress {
@@ -50,8 +69,8 @@
 
         > div {
           height: 100%;
-          background: #0288dd;
-          transition: width 0.1s linear;
+          background: $primary-color;
+          @include transition(width, 0.10s, linear);
         }
       }
     }
@@ -67,24 +86,85 @@
       z-index: 1;
       opacity: 0;
 
+      .actions__left-side {
+        display: flex;
+        align-items: center;
+      }
+
+      .actions__left-side__volume-area {
+        display: flex;
+        align-items: center;
+        padding-right: 5px;
+
+        .volume-area__slider {
+          width: 0;
+          height: 48px;
+          overflow: hidden;
+          cursor: pointer;
+          position: relative;
+          @include transition(width, 0.2s);
+
+          .slider__track {
+            height: 3px;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            margin-top: -1.5px;
+            background: rgba(255, 255, 255, .35);
+          }
+
+          .track__progress {
+            height: 100%;
+            width: 0;
+            background: #ffffff;
+            position: relative;
+          }
+
+          .progress__handle {
+            height: 12px;
+            width: 12px;
+            border-radius: 6px;
+            position: absolute;
+            top: 50%;
+            margin-top: -6px;
+            left: calc(100% - 12px);
+            background: #ffffff;
+          }
+        }
+
+        &:hover,
+        &:focus {
+          .volume-area__slider {
+            width: 55px;
+          }
+        }
+      }
+
       button {
         text-align: center;
         overflow: hidden;
         background: transparent;
         cursor: pointer;
         width: 48px;
-        height: 100%;
+        height: 48px;
         padding: 0 2px;
         margin: 0;
         display: inline-block;
         border: 0;
 
-        >svg {
-          display: none;
+        &.actions__left-side-play-pause-btn {
+          > svg {
+            display: none;
 
-          &.show {
-            display: block;
+            &.show {
+              display: block;
+            }
           }
+        }
+
+        &.volume-area__btn {
+          padding: 6px;
         }
       }
 
@@ -128,18 +208,15 @@
   }
 
   &.touched {
-    &:hover,
-    &:focus {
-      .video-container__controls {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-
-        .controls__backdrop,
-        .controls__actions {
-          opacity: 1;
-        }
+    &:not(.paused) {
+      &:hover,
+      &:focus {
+        @include showVideoContainerControls();
       }
+    }
+
+    &.paused {
+      @include showVideoContainerControls();
     }
   }
 }

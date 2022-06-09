@@ -15,12 +15,13 @@ import {
   styleUrls: ['./video-player.component.scss']
 })
 export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('videoContainer') videoContainer: ElementRef<HTMLElement>;
+  @ViewChild('videoContainer') videoContainer: ElementRef;
   @ViewChild('video') video: ElementRef<HTMLVideoElement>;
   @ViewChild('controlsActions') controlsActions: ElementRef;
   @ViewChild('controlsProgress') controlsProgress: ElementRef;
   @ViewChild('playPauseButton') playPauseButton: ElementRef;
   @ViewChild('fullscreenButton') fullscreenButton: ElementRef;
+  @ViewChild('volumeSlider') volumeSlider: ElementRef;
 
   public supportsHtml5Video: boolean;
   public fullScreenEnabled: boolean;
@@ -30,9 +31,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   public isVideoPlaying = false;
   public isVideoPlayerTooSmall = false;
   public isVideoTouched = false;
+  public isVideoPaused = false;
+  public volumeTrackProgress = 100;
+  public volumeProgressHandlePosition = 43;
 
   private resizeObserver: ResizeObserver;
   private videoPlayerTimeId: any;
+  private lastVolumeValue = 0;
 
   constructor(private host: ElementRef, private zone: NgZone) {
   }
@@ -97,8 +102,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('mouseenter', ['$event'])
-  onVideoPlayerMouseEnter(event: Event) {
+  @HostListener('mouseenter')
+  onVideoPlayerMouseEnter() {
     if (this.isVideoTouched) {
       return;
     }
@@ -117,8 +122,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  @HostListener('mouseout', ['$event'])
-  onVideoPlayerMouseOut(event: Event) {
+  @HostListener('mouseout')
+  onVideoPlayerMouseOut() {
     if (this.isVideoTouched) {
       return;
     }
@@ -164,11 +169,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.video.nativeElement.play();
     this.isVideoPlaying = true;
     this.isVideoTouched = true;
+
+    if (this.isVideoPaused) {
+      this.isVideoPaused = false;
+    }
   }
 
   private pauseVideo() {
     this.video.nativeElement.pause();
     this.isVideoPlaying = false;
+    this.isVideoPaused = true;
   }
 
   private prepareVideoPlayerBeforePlay() {
@@ -179,6 +189,28 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     video.currentTime = 0;
 
     clearInterval(this.videoPlayerTimeId);
+  }
+
+  private static getElementPercentage(e: MouseEvent, elm: ElementRef) {
+    const rect = elm.nativeElement.getBoundingClientRect();
+
+    return (e.pageX - rect.left) / rect.width * 100;
+  };
+
+  private volumeSet(percent: number) {
+    let pos = percent * 0.55;
+
+    if (pos > 43) {
+      pos = 43;
+    }
+
+    if (pos < 0) {
+      pos = 0;
+    }
+
+    this.volumeProgressHandlePosition = pos;
+    this.volumeTrackProgress = percent;
+    this.lastVolumeValue = this.video.nativeElement.volume = percent / 100;
   }
 
   onPlayPauseClick() {
@@ -197,29 +229,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pauseVideo();
   }
 
-  onStopClick() {
-    const video = this.video.nativeElement;
+  onVolumeSliderClick(e: MouseEvent) {
+    const percent = VideoPlayerComponent.getElementPercentage(e, this.volumeSlider);
 
-    video.pause();
-    video.currentTime = 0;
-
-  }
-
-  onMuteClick() {
-    const video = this.video.nativeElement;
-
-    video.muted = !video.muted;
-  }
-
-  onAlertVolume(dir: string) {
-    const video = this.video.nativeElement;
-    const currentVolume = Math.floor(video.volume * 10) / 10;
-
-    if (dir === '+') {
-      if (currentVolume < 1) video.volume += 0.1;
-    } else if (dir === '-') {
-      if (currentVolume > 0) video.volume -= 0.1;
-    }
+    this.volumeSet(percent);
   }
 
   onFullScreenClick() {
