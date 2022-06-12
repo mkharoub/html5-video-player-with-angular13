@@ -50,7 +50,8 @@
               </path>
             </svg>
           </button>
-          <div class="volume-area__slider" (click)="onVolumeSliderClick($event)" #volumeSlider>
+          <div class="volume-area__slider" (click)="onVolumeSliderClick($event)" (mousedown)="onVolumeSliderMouseDown($event)"
+               #volumeSlider>
             <div class='slider__track'>
               <div class='track__progress' [ngStyle]="{'width': volumeTrackProgress + '%'}">
                 <div class='progress__handle' [ngStyle]="{'left': volumeProgressHandlePosition + 'px'}"></div>

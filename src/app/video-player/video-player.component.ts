@@ -37,7 +37,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private resizeObserver: ResizeObserver;
   private videoPlayerTimeId: any;
-  private lastVolumeValue = 0;
+  private handleOnVolumeSliderMouseMove: OmitThisParameter<(e: MouseEvent) => void>;
+  private handleOnVolumeSliderMouseUp: OmitThisParameter<() => void>;
 
   constructor(private host: ElementRef, private zone: NgZone) {
   }
@@ -66,6 +67,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isVideoPlayerTooSmall = false;
       })
     });
+
+    this.handleOnVolumeSliderMouseMove = this.onVolumeSliderMouseMove.bind(this);
+    this.handleOnVolumeSliderMouseUp = this.onVolumeSliderMouseUp.bind(this);
   }
 
   ngAfterViewInit() {
@@ -210,7 +214,24 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.volumeProgressHandlePosition = pos;
     this.volumeTrackProgress = percent;
-    this.lastVolumeValue = this.video.nativeElement.volume = percent / 100;
+    this.video.nativeElement.volume = percent / 100;
+  }
+
+  private onVolumeSliderMouseMove(e: MouseEvent) {
+    let percent = VideoPlayerComponent.getElementPercentage(e, this.volumeSlider);
+
+    if (percent < 0) {
+      percent = 0;
+    } else if (percent > 100) {
+      percent = 100;
+    }
+
+    return this.volumeSet(percent);
+  }
+
+  private onVolumeSliderMouseUp() {
+    document.removeEventListener('mousemove', this.handleOnVolumeSliderMouseMove, false);
+    document.removeEventListener('mouseup', this.handleOnVolumeSliderMouseUp, false);
   }
 
   onPlayPauseClick() {
@@ -233,6 +254,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const percent = VideoPlayerComponent.getElementPercentage(e, this.volumeSlider);
 
     this.volumeSet(percent);
+  }
+
+  onVolumeSliderMouseDown(e: MouseEvent) {
+    e.preventDefault();
+
+    document.addEventListener('mousemove', this.handleOnVolumeSliderMouseMove, false);
+    document.addEventListener('mouseup', this.handleOnVolumeSliderMouseUp, false);
   }
 
   onFullScreenClick() {
