@@ -43,6 +43,7 @@ $primary-color: #0288dd;
     right: 0;
     bottom: 0;
     height: 60%;
+    cursor: default;
 
     .controls__backdrop {
       position: absolute;
@@ -62,15 +63,49 @@ $primary-color: #0288dd;
       width: calc(100% - 30px);
       z-index: 1;
 
-      .progress__placeholder {
+      .progress__inner {
+        padding-top: 10px;
         cursor: pointer;
-        height: 5px;
-        background: rgba(255, 255, 255, .4);
 
-        > div {
-          height: 100%;
-          background: $primary-color;
-          @include transition(width, 0.10s, linear);
+        .inner__placeholder {
+          height: 3px;
+          background: rgba(255, 255, 255, .4);
+          transition: all 0.1s ease;
+
+          > div {
+            height: 100%;
+            background: $primary-color;
+            position: relative;
+
+            &:after {
+              content: ' ';
+              display: block;
+              width: 12px;
+              height: 12px;
+              border-radius: 6px;
+              background: $primary-color;
+              position: absolute;
+              top: 50%;
+              right: 0;
+              opacity: 0;
+              transform: translateY(-50%);
+              transition: all 0.1s ease;
+            }
+          }
+        }
+
+        &:hover,
+        &:focus {
+          .inner__placeholder {
+            height: 5px;
+            background: rgba(255, 255, 255, .6);
+
+            > div {
+              &:after {
+                opacity: 1;
+              }
+            }
+          }
         }
       }
     }
@@ -133,6 +168,13 @@ $primary-color: #0288dd;
           }
         }
 
+        .volume-area__time {
+          color: #ffffff;
+          margin-left: 10px;
+          font-size: 12px;
+          letter-spacing: -0.2px;
+        }
+
         &:hover,
         &:focus {
           .volume-area__slider {
@@ -183,6 +225,18 @@ $primary-color: #0288dd;
     &.full-height {
       height: 100%;
     }
+  }
+
+  .video-container__video-duration {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    background: #000000;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+    font-size: 12px;
+    padding: 0 3px;
+    font-weight: 500;
   }
 
   &.fullscreen-active {

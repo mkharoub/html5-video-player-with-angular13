@@ -19,11 +19,14 @@
     <!-- Offer download -->
     <a href="assets/video/tears-of-steel-battle-clip-medium.mp4">Download MP4</a>
   </video>
+  <div class="video-container__video-duration" *ngIf="videoDuration && !isVideoTouched">{{videoDuration}}</div>
   <div class="video-container__controls" *ngIf="supportsHtml5Video" [ngClass]="{'full-height': isVideoPlayerTooSmall}">
     <div class="controls__backdrop"></div>
     <div class="controls__progress">
-      <div class="progress__placeholder" #controlsProgress (click)="onProgressClick($event)">
-        <div [ngStyle]="{'width': progressBarWidth}"></div>
+      <div class="progress__inner" (click)="onProgressClick($event)" #controlsProgress>
+        <div class="inner__placeholder">
+          <div [ngStyle]="{'width': progressBarWidth}"></div>
+        </div>
       </div>
     </div>
     <div class="controls__actions" #controlsActions>
@@ -50,13 +53,17 @@
               </path>
             </svg>
           </button>
-          <div class="volume-area__slider" (click)="onVolumeSliderClick($event)" (mousedown)="onVolumeSliderMouseDown($event)"
+          <div class="volume-area__slider" (click)="onVolumeSliderClick($event)"
+               (mousedown)="onVolumeSliderMouseDown($event)"
                #volumeSlider>
             <div class='slider__track'>
               <div class='track__progress' [ngStyle]="{'width': volumeTrackProgress + '%'}">
                 <div class='progress__handle' [ngStyle]="{'left': volumeProgressHandlePosition + 'px'}"></div>
               </div>
             </div>
+          </div>
+          <div class="volume-area__time">
+            {{videoCurrentTime}} / {{videoDuration}}
           </div>
         </div>
       </div>

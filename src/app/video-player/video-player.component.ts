@@ -25,7 +25,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public supportsHtml5Video: boolean;
   public fullScreenEnabled: boolean;
-  public progressMax = 0;
+  public videoDuration: string;
+  public videoCurrentTime: string;
   public progressBarWidth = '0%';
   public isFullScreenActive = false;
   public isVideoPlaying = false;
@@ -78,10 +79,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
       video.controls = false;
       video.onloadedmetadata = () => {
-        this.progressMax = video.duration;
+        this.videoDuration = VideoPlayerComponent.prettyTime(video.duration);
       }
       video.ontimeupdate = () => {
         this.progressBarWidth = Math.floor((video.currentTime / video.duration) * 100) + '%';
+        this.videoCurrentTime = VideoPlayerComponent.prettyTime(video.currentTime);
       }
 
       this.resizeObserver.observe(this.host.nativeElement);
@@ -232,6 +234,21 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private onVolumeSliderMouseUp() {
     document.removeEventListener('mousemove', this.handleOnVolumeSliderMouseMove, false);
     document.removeEventListener('mouseup', this.handleOnVolumeSliderMouseUp, false);
+  }
+
+  private static prettyTime(time: number) {
+    let minutes: number | string = Math.floor(time / 60);
+    let seconds: number | string = Math.floor(time % 60);
+
+    if (minutes < 10) {
+      minutes = '0' + minutes
+    }
+
+    if (seconds < 10) {
+      seconds = '0' + seconds
+    }
+
+    return `${minutes}:${seconds}`;
   }
 
   onPlayPauseClick() {
