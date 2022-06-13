@@ -28,7 +28,6 @@ $primary-color: #0288dd;
   margin: 0 auto;
   display: flex;
   position: relative;
-  cursor: pointer;
 
   .video-container__player {
     width: 100%;
@@ -190,18 +189,16 @@ $primary-color: #0288dd;
         cursor: pointer;
         width: 48px;
         height: 48px;
-        padding: 0 2px;
+        padding: 0 4px;
         margin: 0;
         display: inline-block;
         border: 0;
 
-        &.actions__left-side-play-pause-btn {
-          > svg {
-            display: none;
+        > svg {
+          display: none;
 
-            &.show {
-              display: block;
-            }
+          &.show {
+            display: block;
           }
         }
 

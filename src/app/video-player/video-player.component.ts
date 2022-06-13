@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  HostListener,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'app-video-player',
@@ -19,8 +10,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('video') video: ElementRef<HTMLVideoElement>;
   @ViewChild('controlsActions') controlsActions: ElementRef;
   @ViewChild('controlsProgress') controlsProgress: ElementRef;
-  @ViewChild('playPauseButton') playPauseButton: ElementRef;
-  @ViewChild('fullscreenButton') fullscreenButton: ElementRef;
   @ViewChild('volumeSlider') volumeSlider: ElementRef;
 
   public supportsHtml5Video: boolean;
@@ -35,6 +24,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   public isVideoPaused = false;
   public volumeTrackProgress = 100;
   public volumeProgressHandlePosition = 43;
+  public lastVolumeValue = 1;
+  public hideVideoDuration = false;
 
   private resizeObserver: ResizeObserver;
   private videoPlayerTimeId: any;
@@ -100,10 +91,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   onVideoPlayerClick(event: Event) {
     const isItControlsActions = this.controlsActions.nativeElement.contains(event.target);
     const isItControlsProgress = this.controlsProgress.nativeElement.contains(event.target);
-    const isItPlayPauseButton = this.playPauseButton.nativeElement.contains(event.target);
-    const isItFullscreenButton = this.fullscreenButton.nativeElement.contains(event.target);
 
-    if (!isItControlsActions && !isItControlsProgress && !isItPlayPauseButton && !isItFullscreenButton) {
+    if (!isItControlsActions && !isItControlsProgress) {
       this.onPlayPauseClick();
     }
   }
@@ -113,6 +102,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isVideoTouched) {
       return;
     }
+
+    this.hideVideoDuration = true;
 
     const video = this.video.nativeElement;
 
@@ -134,6 +125,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.hideVideoDuration = false;
     this.prepareVideoPlayerBeforePlay();
   }
 
@@ -203,20 +195,24 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     return (e.pageX - rect.left) / rect.width * 100;
   };
 
+  private static getVolumeProgressHandlePosition(percent: number) {
+    let position = percent * 0.55;
+
+    if (position > 43) {
+      position = 43;
+    }
+
+    if (position < 0) {
+      position = 0;
+    }
+
+    return position;
+  }
+
   private volumeSet(percent: number) {
-    let pos = percent * 0.55;
-
-    if (pos > 43) {
-      pos = 43;
-    }
-
-    if (pos < 0) {
-      pos = 0;
-    }
-
-    this.volumeProgressHandlePosition = pos;
+    this.volumeProgressHandlePosition = VideoPlayerComponent.getVolumeProgressHandlePosition(percent);
     this.volumeTrackProgress = percent;
-    this.video.nativeElement.volume = percent / 100;
+    this.lastVolumeValue = this.video.nativeElement.volume = percent / 100;
   }
 
   private onVolumeSliderMouseMove(e: MouseEvent) {
@@ -228,7 +224,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       percent = 100;
     }
 
-    return this.volumeSet(percent);
+    this.volumeSet(percent);
   }
 
   private onVolumeSliderMouseUp() {
@@ -278,6 +274,14 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.addEventListener('mousemove', this.handleOnVolumeSliderMouseMove, false);
     document.addEventListener('mouseup', this.handleOnVolumeSliderMouseUp, false);
+  }
+
+  onMuteUnMuteVolume() {
+    const volume = this.video.nativeElement.volume > 0 ? 0 : this.lastVolumeValue || 1;
+
+    this.volumeProgressHandlePosition = VideoPlayerComponent.getVolumeProgressHandlePosition(volume * 100);
+    this.video.nativeElement.volume = volume;
+    this.volumeTrackProgress = volume * 100;
   }
 
   onFullScreenClick() {
