@@ -26,6 +26,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   public volumeProgressHandlePosition = 43;
   public lastVolumeValue = 1;
   public hideVideoDuration = false;
+  public hideVideoCover = false;
+  public addFadeout = false;
 
   private resizeObserver: ResizeObserver;
   private videoPlayerTimeId: any;
@@ -104,6 +106,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.hideVideoDuration = true;
+    this.hideVideoCover = true;
 
     const video = this.video.nativeElement;
 
@@ -126,6 +129,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.hideVideoDuration = false;
+    this.hideVideoCover = false;
     this.prepareVideoPlayerBeforePlay();
   }
 
@@ -251,6 +255,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.isVideoTouched) {
       this.prepareVideoPlayerBeforePlay();
     }
+
+    this.hideVideoCover = false;
+    this.addFadeout = true;
+
+    setTimeout(() => {
+      this.addFadeout = false;
+    }, 500);
 
     const video = this.video.nativeElement;
 

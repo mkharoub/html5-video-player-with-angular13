@@ -29,6 +29,17 @@ $primary-color: #0288dd;
   display: flex;
   position: relative;
 
+  .svg-shadow {
+    stroke: #000;
+    stroke-opacity: .15;
+    stroke-width: 2px;
+    fill: none;
+  }
+
+  .svg-fill {
+    fill: #fff;
+  }
+
   .video-container__player {
     width: 100%;
     height: auto;
@@ -206,17 +217,6 @@ $primary-color: #0288dd;
           padding: 6px;
         }
       }
-
-      .svg-shadow {
-        stroke: #000;
-        stroke-opacity: .15;
-        stroke-width: 2px;
-        fill: none;
-      }
-
-      .svg-fill {
-        fill: #fff;
-      }
     }
 
     &.full-height {
@@ -234,6 +234,62 @@ $primary-color: #0288dd;
     font-size: 12px;
     padding: 0 3px;
     font-weight: 500;
+  }
+
+  .video-container__video-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:after {
+      content: ' ';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, .1);
+    }
+
+    .video-cover__icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(0, 0, 0, .7);
+      border-radius: 100%;
+
+      svg {
+        display: none;
+
+        &.show {
+          display: block;
+        }
+      }
+
+      &.hide {
+        opacity: 0;
+      }
+
+      &.add-fadeout {
+        animation: kh-fadeout .5s linear 1 normal forwards;
+      }
+    }
+
+    &.hide {
+      opacity: 0;
+
+      .video-cover__icon {
+        display: none;
+      }
+    }
+
+    &.hide-backdrop {
+      &:after {
+        display: none;
+      }
+    }
   }
 
   &.fullscreen-active {
@@ -269,5 +325,19 @@ $primary-color: #0288dd;
     &.paused {
       @include showVideoContainerControls();
     }
+  }
+}
+
+@keyframes kh-fadeout {
+  from {
+    transform: scale(1);
+    opacity: 1;
+    display: block;
+  }
+
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+    display: none;
   }
 }
